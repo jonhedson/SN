@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SN.Data.Context;
+using SN.Data.Services;
 
 namespace SN.Api
 {
@@ -23,6 +24,9 @@ namespace SN.Api
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SNdbConnection")));
             services.AddControllers();
 
+            // configure DI for application services
+            services.AddScoped<IUserService, UserService>();
+
             //services.AddMvc().AddJsonOptions(options =>
             //{               options.SerializerSettings.ReferenceLoopHandling =
             //        Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -32,6 +36,7 @@ namespace SN.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -41,6 +46,7 @@ namespace SN.Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
